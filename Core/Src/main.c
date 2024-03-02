@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "can.h"
+#include "dma.h"
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
@@ -26,8 +27,12 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "stdio.h"
+#include "string.h"
 #include "timer.h"
 #include "ucan.h"
+#include "uspi.h"
+#include "led.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -48,6 +53,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+
+//uint8_t spi_tx[] = {0xff};
 
 /* USER CODE END PV */
 
@@ -78,8 +85,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  TimInit(&htim2);
-  CanInit(&hcan1);
+
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -91,6 +97,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_CAN1_Init();
   MX_CAN2_Init();
   MX_SPI2_Init();
@@ -98,13 +105,20 @@ int main(void)
   MX_TIM5_Init();
   MX_USART6_UART_Init();
   /* USER CODE BEGIN 2 */
-  
+  TimInit(&htim2);
+  CanInit(&hcan1);
+  ledInit(&htim5);
+  spiInit(&hspi2);
+  ledSet(255, 255, 255);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
   while (1)
   {
+    spiSend((uint8_t *)"12345", 5, 0);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

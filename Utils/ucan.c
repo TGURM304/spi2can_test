@@ -20,11 +20,11 @@ void CanInit(CAN_HandleTypeDef *h) {
   filter.SlaveStartFilterBank = 14;
   HAL_CAN_ConfigFilter(h, &filter);
   HAL_CAN_Start(h);
-  HAL_CAN_ActivateNotification(h, CAN_IT_RX_FIFO0_MSG_PENDING);
+  HAL_CAN_ActivateNotification(h, CAN_IT_RX_FIFO0_FULL);
 }
 
 char receiveData[50];
-void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *h) {
+void HAL_CAN_RxFifo0FullCallback(CAN_HandleTypeDef *h) {
   // 把 CAN 接收到的信息转发到串口
   CAN_RxHeaderTypeDef rh;
   HAL_CAN_GetRxMessage(h, CAN_RX_FIFO0, &rh, (uint8_t *)receiveData);
