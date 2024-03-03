@@ -3,21 +3,22 @@
 //
 
 #include "uspi.h"
+#include "led.h"
+#define min(a, b) ((a) < (b) ? (a) : (b))
+#define BUFFER_LIMIT 10
 
 SPI_HandleTypeDef *SPIh;
-uint8_t spi_tx[10];
+uint8_t spi_tx[BUFFER_LIMIT];
 
 void spiInit(SPI_HandleTypeDef *h) {
   SPIh = h;
-  //HAL_SPI_Transmit_DMA(h, spi_tx, 9);
 }
 
-void spiSend(const uint8_t *data, int len, int control) {
-  if(len + 1 > 9) len = 9 - 1;
-  spi_tx[0] = control;
-  for(int i = 0; i < 9; i++) {
-    if(i < len) spi_tx[i+1] = data[i];
-    else spi_tx[i+1] = 0;
-  }
-  HAL_SPI_Transmit(SPIh, spi_tx, 9, 0xffff);
+void spiSend(const uint8_t *data, uint8_t len, uint8_t control) {
+  ledSet(255, 0, 0);
+  if(control == 0) len = min(len, 8);
+  spi_tx[0] = control, spi_tx[1] = len;
+  for(int i = 0; i < len; i++) spi_tx[i+2] = data[i];
+  HAL_SPI_Transmit(SPIh, spi_tx, BUFFER_LIMIT, 0xffff);
+//  HAL_SPI_Transmit_DMA(SPIh, spi_tx, BUFFER_LIMIT);
 }

@@ -67,6 +67,11 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+#define BUFFER_SIZE 10
+
+// CAN 回环测试
+uint8_t spi_tx_test[BUFFER_SIZE] = {0, 8, 1, 2, 3, 4, 5, 6, 7, 8};
+
 /* USER CODE END 0 */
 
 /**
@@ -109,7 +114,15 @@ int main(void)
   CanInit(&hcan1);
   ledInit(&htim5);
   spiInit(&hspi2);
+
+  HAL_GPIO_WritePin(ExPower_GPIO_Port, ExPower_Pin, GPIO_PIN_SET);
   ledSet(255, 255, 255);
+
+  HAL_Delay(2000); // 延时 2s 等从机先启动
+//  uint8_t tmp[6] = {0xff, 1, 2, 3, 4, 0xfe};
+  HAL_SPI_Transmit_DMA(&hspi2, spi_tx_test, BUFFER_SIZE);
+
+  ledSet(255, 0, 0);
 
   /* USER CODE END 2 */
 
@@ -118,7 +131,6 @@ int main(void)
 
   while (1)
   {
-    spiSend((uint8_t *)"12345", 5, 0);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

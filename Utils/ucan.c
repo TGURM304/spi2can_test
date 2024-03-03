@@ -4,6 +4,7 @@
 
 #include "ucan.h"
 #include "string.h"
+#include "led.h"
 
 void CanInit(CAN_HandleTypeDef *h) {
   // 开启 CAN_IT_RX_FIFO0_MSG_PENDING 接收中断
@@ -20,12 +21,13 @@ void CanInit(CAN_HandleTypeDef *h) {
   filter.SlaveStartFilterBank = 14;
   HAL_CAN_ConfigFilter(h, &filter);
   HAL_CAN_Start(h);
-  HAL_CAN_ActivateNotification(h, CAN_IT_RX_FIFO0_FULL);
+  HAL_CAN_ActivateNotification(h, CAN_IT_RX_FIFO0_MSG_PENDING);
 }
 
 char receiveData[50];
-void HAL_CAN_RxFifo0FullCallback(CAN_HandleTypeDef *h) {
+void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *h) {
   // 把 CAN 接收到的信息转发到串口
+  ledSet(0, 255, 0);
   CAN_RxHeaderTypeDef rh;
   HAL_CAN_GetRxMessage(h, CAN_RX_FIFO0, &rh, (uint8_t *)receiveData);
   HAL_UART_Transmit(&huart6, (uint8_t *)receiveData, strlen(receiveData), 0xffff);
