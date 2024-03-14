@@ -13,5 +13,6 @@
 #include "usart.h"
 
 void CanInit(CAN_HandleTypeDef *h);
+void CanSend(CAN_HandleTypeDef *h, uint8_t *data, uint8_t StdId);
 
 #endif//CANTEST_UCAN_H

@@ -33,6 +33,7 @@
 #include "ucan.h"
 #include "uspi.h"
 #include "led.h"
+#include "common.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -67,10 +68,15 @@ void SystemClock_Config(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-#define BUFFER_SIZE 10
-
-// CAN 回环测试
-uint8_t spi_tx_test[BUFFER_SIZE] = {0, 8, 1, 2, 3, 4, 5, 6, 7, 8};
+// TEST
+uint8_t spi_tx_test[BUFFER_SIZE] = {1, 2, 3, 4, 5, 6, 7, 8};
+uint8_t can_tx_test[8] = {0, 1, 2, 3, 4, 5, 6, 7};
+uint8_t can_tx_test_1[8] = {0, 1, 2, 3, 4, 5, 6, 7};
+uint8_t can_tx_test_2[8] = {1, 2, 3, 4, 5, 6, 7, 8};
+uint8_t can_tx_test_3[8] = {2, 3, 4, 5, 6, 7, 8, 9};
+uint8_t can_tx_test_4[8] = {3, 4, 5, 6, 7, 8, 9, 10};
+uint8_t can_tx_test_5[8] = {4, 5, 6, 7, 8, 9, 10, 11};
+uint8_t can_tx_test_6[8] = {5, 6, 7, 8, 9, 10, 11, 12};
 
 /* USER CODE END 0 */
 
@@ -112,15 +118,16 @@ int main(void)
   /* USER CODE BEGIN 2 */
   TimInit(&htim2);
   CanInit(&hcan1);
+  CanInit(&hcan2);
   ledInit(&htim5);
   spiInit(&hspi2);
 
   HAL_GPIO_WritePin(ExPower_GPIO_Port, ExPower_Pin, GPIO_PIN_SET);
   ledSet(255, 255, 255);
 
-  HAL_Delay(2000); // 延时 2s 等从机先启动
+   HAL_Delay(2000); // 延时 2s 等从机先启动
 //  uint8_t tmp[6] = {0xff, 1, 2, 3, 4, 0xfe};
-  HAL_SPI_Transmit_DMA(&hspi2, spi_tx_test, BUFFER_SIZE);
+//  HAL_SPI_Transmit_DMA(&hspi2, spi_tx_test, BUFFER_SIZE);
 
   ledSet(255, 0, 0);
 
@@ -131,6 +138,20 @@ int main(void)
 
   while (1)
   {
+    CanSend(&hcan2, can_tx_test_1, 0x01);
+    HAL_Delay(1);
+    CanSend(&hcan2, can_tx_test_2, 0x02);
+    HAL_Delay(1);
+    CanSend(&hcan2, can_tx_test_3, 0x03);
+    HAL_Delay(1);
+    CanSend(&hcan2, can_tx_test_4, 0x04);
+    HAL_Delay(1);
+    CanSend(&hcan2, can_tx_test_5, 0x05);
+    HAL_Delay(1);
+    CanSend(&hcan2, can_tx_test_6, 0x06);
+    HAL_Delay(1);
+    spiTransmitReceive((uint8_t *)"1145141919810abcdefghijklmnopqrstuvwxyz\r\n", sizeof "1145141919810abcdefghijklmnopqrstuvwxyz\r\n", 1);
+    HAL_Delay(1);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

@@ -13,5 +13,6 @@
 
 void spiInit(SPI_HandleTypeDef *h);
 void spiSend(const uint8_t *data, uint8_t len, uint8_t control);
+void spiTransmitReceive(const uint8_t *data, uint8_t len, uint8_t control);
 
 #endif//CANTEST_USPI_H
